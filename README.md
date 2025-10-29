@@ -10,3 +10,8 @@ The final system will enable authenticated users to:
 - Attach files and media
 - Retrieve analytics such as entries per day or tag distribution
 - Interact with a fully documented, containerized, and cloud-ready backend
+
+
+See auto generated API docs below
+
+![alt text](hello_and_status_API_docs.png)
