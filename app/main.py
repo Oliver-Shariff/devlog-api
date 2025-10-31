@@ -1,9 +1,11 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from datetime import datetime
 from app.models import Base
 from app.database import engine
+from app.routers import users
 
 app = FastAPI()
+app.include_router(users.router)
 
 @app.get("/hello")
 async def hello():
