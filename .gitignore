@@ -3,3 +3,5 @@ __pycache__/
 .env
 *.pyc
 .DS_Store
+devNotes.txt
+app/__pycache__/main.cpython-312.pyc

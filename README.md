@@ -12,6 +12,15 @@ The final system will enable authenticated users to:
 - Interact with a fully documented, containerized, and cloud-ready backend
 
 
+Start the app with
+
+uvicorn app.main:app --reload
+
+
 See auto generated API docs below
 
 ![alt text](hello_and_status_API_docs.png)
+
+See ER Diagram below
+
+![alt text](Er_diagram.png)
