@@ -23,7 +23,7 @@ class Entry(Base):
 class Tag(Base):
     __tablename__ = "tags"
 
-    name = Column(String, primary_key = True)
+    name = Column(String, primary_key = True, unique=True)
 
 class Tag_Entry(Base):
     __tablename__ = "tag_entry_join"

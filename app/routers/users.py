@@ -15,15 +15,22 @@ router = APIRouter(prefix="/api/users", tags=["users"])
 async def get_all_users_route(db: Session = Depends(get_db)):
     """This route returns all users"""
     users = users_crud.get_all_users(db)
-    return users
+    safe = []
+    for u in users:
+        d = jsonable_encoder(u)
+        d.pop("password", None)
+        safe.append(d)
+    return safe
 
 @router.get("/{user_email}")
-async def get_user( user_email, db: Session = Depends(get_db)):
+async def get_user( user_email:str, db: Session = Depends(get_db)):
     """ This route returns a user from an input email """
     user = users_crud.get_user(user_email, db)
     if user is None:
         raise HTTPException(status_code=404, detail = "User not found")
-    return user
+    data = jsonable_encoder(user)
+    data.pop("password", None)
+    return data
 
 @router.post("/", status_code=201)
 async def add_user(new_user:dict, db: Session = Depends(get_db)):
@@ -49,18 +56,20 @@ async def add_user(new_user:dict, db: Session = Depends(get_db)):
     except IntegrityError:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Email already exsits"
+            detail="Email already exists"
         )
 
 @router.put("/{user_email}")
-async def change_password(user_email, password: dict, db:Session = Depends(get_db)):
+async def change_password(user_email:str, password: dict, db:Session = Depends(get_db)):
     """ This route changes a user's password """
-    password = password.get("password")
+    ok = password.get("password")
+    if not ok:
+        raise HTTPException(status_code=404, detail="User not found")
     users_crud.change_password(user_email,password,db)
-    return {"message": f"password changed to {password} successfully."}
+    return {"message": "password updated successfully."}
 
 @router.delete("/{user_email}")
-async def deleter_user(user_email, db:Session = Depends(get_db)):
+async def deleter_user(user_email:str, db:Session = Depends(get_db)):
     """ This route deletes a user """
     user = users_crud.delete_user(user_email, db)
     if user is None:

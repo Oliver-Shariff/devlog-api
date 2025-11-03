@@ -29,8 +29,13 @@ def add_user(email, username, password, created_on, db: Session):
 # update user
 # Update user set col = val ... Where id = x
 def change_password(email, password, db:Session):
-    stmnt = update(User).where(email == email).values(password = password)
-    db.execute(stmnt)
+    stmnt = update(User).where(User.email == email).values(password = password)
+    result = db.execute(stmnt)
+    if result.rowcount == 0:
+        db.rollback()
+        return False
+    db.commit()
+    return True
 
 # delete a user based on id
 # Delete from user where (id = x)
