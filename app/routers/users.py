@@ -1,8 +1,10 @@
 from fastapi import APIRouter, Depends
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.crud import users as users_crud
 from datetime import datetime
+
 
 
 router = APIRouter(prefix="/api/users", tags=["users"])
@@ -20,7 +22,7 @@ async def get_user( user_email, db: Session = Depends(get_db)):
     user = users_crud.get_user(user_email, db)
     return user
 
-@router.post("/")
+@router.post("/", status_code=201)
 async def add_user(new_user:dict, db: Session = Depends(get_db)):
     """ This route adds a new user """
     # Extract fields from the incoming JSON body
@@ -28,15 +30,17 @@ async def add_user(new_user:dict, db: Session = Depends(get_db)):
     username = new_user.get("username")
     password = new_user.get("password")
 
-    users_crud.add_user(
+    created = users_crud.add_user(
         email=email,
         username=username,
         password=password,
         created_on=datetime.now(),
         db=db
     )
+    data = jsonable_encoder(created)
+    data.pop("password", None)
 
-    return {"message": f"User {username} added successfully."}
+    return (data)
 
 @router.put("/{user_email}")
 async def change_password(user_email, password: dict, db:Session = Depends(get_db)):

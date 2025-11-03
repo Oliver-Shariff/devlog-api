@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy import select, insert, update, delete
 from app.models import User
 
@@ -20,6 +21,8 @@ def add_user(email, username, password, created_on, db: Session):
     new_user = User(email = email, username = username, password = password, created_on = created_on)
     db.add(new_user)
     db.commit()
+    db.refresh(new_user)
+    return(new_user)
 
 # update user
 # Update user set col = val ... Where id = x
