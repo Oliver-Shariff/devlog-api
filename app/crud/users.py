@@ -11,18 +11,20 @@ def get_all_users(db: Session):
 # get a user based on email
 # Select * from users where (email = x)
 def get_user(email, db:Session):
-    stmnt = select(User).where(User.email == email)
-    result = db.scalars(stmnt).all()
-    return(result)
+    return db.get(User, email)
 
 # add a user
 # Insert INTO users (col) (values)
 def add_user(email, username, password, created_on, db: Session):
     new_user = User(email = email, username = username, password = password, created_on = created_on)
     db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return(new_user)
+    try:
+        db.commit()
+        db.refresh(new_user)
+        return(new_user)
+    except IntegrityError:
+        db.rollback()
+        raise
 
 # update user
 # Update user set col = val ... Where id = x
@@ -33,5 +35,10 @@ def change_password(email, password, db:Session):
 # delete a user based on id
 # Delete from user where (id = x)
 def delete_user(email, db:Session):
-    stmnt = delete(User).where(email == email)
-    db.execute(stmnt)
+    user = db.get(User, email)
+
+    if not user:
+        return None
+    db.delete(user)
+    db.commit()
+    return user
