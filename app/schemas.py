@@ -16,3 +16,11 @@ class UserRead(BaseModel):
 
 class UserUpdate(BaseModel):
     password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str

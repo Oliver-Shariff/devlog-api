@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import select, insert, update, delete
 from app.models import User
+from app.security import get_password_hash
 
 def get_all_users(db: Session):
     stmt = select(User)
@@ -16,7 +17,8 @@ def get_user(email, db:Session):
 # add a user
 # Insert INTO users (col) (values)
 def add_user(email, username, password, created_on, db: Session):
-    new_user = User(email = email, username = username, password = password, created_on = created_on)
+    hashed = get_password_hash(password)
+    new_user = User(email = email, username = username, hashed_password = hashed, created_on = created_on)
     db.add(new_user)
     try:
         db.commit()
@@ -29,7 +31,8 @@ def add_user(email, username, password, created_on, db: Session):
 # update user
 # Update user set col = val ... Where id = x
 def change_password(email, password, db:Session):
-    stmnt = update(User).where(User.email == email).values(password = password)
+    hashed = get_password_hash(password)
+    stmnt = update(User).where(User.email == email).values(hashed_password = hashed)
     result = db.execute(stmnt)
     if result.rowcount == 0:
         db.rollback()

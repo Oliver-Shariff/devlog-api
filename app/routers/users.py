@@ -1,12 +1,15 @@
+from datetime import datetime, timedelta, timezone
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.encoders import jsonable_encoder
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from app.database import get_db
 from app.crud import users as users_crud
-from app.schemas import UserCreate, UserUpdate, UserRead
-from datetime import datetime
+from app.schemas import UserCreate, UserUpdate, UserRead, Token
 from pydantic import EmailStr
+import app.security as security
 
 
 router = APIRouter(prefix="/api/users", tags=["users"])

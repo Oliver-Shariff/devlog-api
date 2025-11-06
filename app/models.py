@@ -6,7 +6,7 @@ class User(Base):
 
     email = Column(String, primary_key = True, nullable = False)
     username = Column(String, nullable = False)
-    password = Column(String, nullable = False)
+    hashed_password = Column(String, nullable = False)
     created_on = Column(TIMESTAMP(timezone=True), server_default=text('now()'))
 
 class Entry(Base):
