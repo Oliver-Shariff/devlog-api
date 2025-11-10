@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.schemas import LoginRequest, Token
@@ -11,8 +11,18 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/login", response_model=Token)
-def login(payload: LoginRequest, db: Session = Depends(get_db)):
-    user = security.authenticate_user(db, payload.email, payload.password)
+async def login(request: Request, db: Session = Depends(get_db)):
+    if request.headers.get("content-type") == "application/json":
+        body = await request.json()
+        email = body.get("email")
+        password = body.get("password")
+    else:
+        # fallback for /docs form
+        form = await request.form()
+        email = form.get("username")
+        password = form.get("password")
+
+    user = security.authenticate_user(db, email, password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

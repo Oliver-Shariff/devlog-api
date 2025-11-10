@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy import select, insert, update, delete
+from sqlalchemy import select, update
 from app.models import User
 from app.security import get_password_hash
 
@@ -11,6 +11,7 @@ def get_all_users(db: Session):
 
 # get a user based on email
 # Select * from users where (email = x)
+
 def get_user(email, db:Session):
     return db.get(User, email)
 

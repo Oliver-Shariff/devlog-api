@@ -1,5 +1,8 @@
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
+from typing import Optional
+
+# --- User Schemas ---
 
 class UserCreate(BaseModel):
     email:EmailStr
@@ -17,6 +20,8 @@ class UserRead(BaseModel):
 class UserUpdate(BaseModel):
     password: str
 
+# --- Auth Schemas ---
+
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -24,3 +29,23 @@ class Token(BaseModel):
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
+
+# --- Entry Schemas ---
+
+class EntryCreate(BaseModel):
+    title: str
+    content: str
+
+class EntryRead(BaseModel):
+    id: int
+    title: str
+    content: str
+    created_on: datetime
+    last_edit: datetime
+
+    class Config:
+        from_attributes = True
+
+class EntryUpdate(BaseModel):
+    title: Optional[str] = None
+    content: Optional[str] = None

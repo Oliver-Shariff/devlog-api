@@ -12,13 +12,12 @@ class User(Base):
 class Entry(Base):
     __tablename__ = "entries"
 
-    id = Column(Integer, primary_key = True, nullable = False)
+    id = Column(Integer, primary_key = True, nullable = False, autoincrement= True)
     user_email = Column(ForeignKey("users.email"))
     title = Column(String, nullable = True)
     content = Column(String, nullable = False)
     created_on = Column(TIMESTAMP(timezone=True), server_default=text('now()'))
     last_edit = Column(TIMESTAMP(timezone=True), server_default=text('now()'))
-    attachment = Column(String, nullable = True) # will likely alter this from string later
     
 class Tag(Base):
     __tablename__ = "tags"
