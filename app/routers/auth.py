@@ -7,10 +7,10 @@ from app.schemas import LoginRequest, Token
 import app.security as security
 
 
-router = APIRouter(prefix="/api/auth", tags=["auth"])
+router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-@router.post("/auth/login", response_model=Token)
+@router.post("/login", response_model=Token)
 def login(payload: LoginRequest, db: Session = Depends(get_db)):
     user = security.authenticate_user(db, payload.email, payload.password)
     if not user:
