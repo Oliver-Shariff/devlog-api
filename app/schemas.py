@@ -30,6 +30,19 @@ class LoginRequest(BaseModel):
     email: EmailStr
     password: str
 
+# --- Tag Schemas ---
+
+class TagBase(BaseModel):
+    name: str
+    email: EmailStr
+
+class TagCreate(TagBase):
+    pass
+
+class TagRead(TagBase):
+    class Config:
+        from_attributes = True
+        
 # --- Entry Schemas ---
 
 class EntryCreate(BaseModel):
@@ -42,6 +55,7 @@ class EntryRead(BaseModel):
     content: str
     created_on: datetime
     last_edit: datetime
+    tags: list[TagRead] = []
 
     class Config:
         from_attributes = True

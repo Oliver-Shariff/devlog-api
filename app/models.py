@@ -1,5 +1,6 @@
 from app.database import Base
-from sqlalchemy import Column, Integer, String, TIMESTAMP, Boolean, text, ForeignKey
+from sqlalchemy import Column, Integer, String, TIMESTAMP, text, ForeignKey
+from sqlalchemy.orm import relationship
 
 class User(Base):
     __tablename__ = "users"
@@ -13,20 +14,28 @@ class Entry(Base):
     __tablename__ = "entries"
 
     id = Column(Integer, primary_key = True, nullable = False, autoincrement= True)
-    user_email = Column(ForeignKey("users.email"))
+    user_email = Column(ForeignKey("users.email"), nullable=False)
     title = Column(String, nullable = True)
     content = Column(String, nullable = False)
     created_on = Column(TIMESTAMP(timezone=True), server_default=text('now()'))
-    last_edit = Column(TIMESTAMP(timezone=True), server_default=text('now()'))
-    
+    last_edit = Column(
+    TIMESTAMP(timezone=True),
+    server_default=text('now()'),
+    onupdate=text('now()')
+    )
+    tags = relationship("Tag", secondary="tag_entry_join", back_populates="entries")
+
 class Tag(Base):
     __tablename__ = "tags"
 
-    name = Column(String, primary_key = True, unique=True)
+    id = Column(Integer, primary_key = True, nullable = False, autoincrement= True)
+    name = Column(String, unique=True)
+    entries = relationship("Entry", secondary="tag_entry_join", back_populates="tags")
+    user_email = Column(ForeignKey("users.email"), nullable=False)
 
-class Tag_Entry(Base):
+class TagEntryJoin(Base):
     __tablename__ = "tag_entry_join"
 
-    tag_name = Column(ForeignKey("tags.name"), primary_key = True)
+    tag_id = Column(ForeignKey("tags.name"), primary_key = True)
     entry_id = Column(ForeignKey("entries.id"), primary_key = True)
     

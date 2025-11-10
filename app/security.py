@@ -28,7 +28,7 @@ def get_password_hash(password):
     return password_hash.hash(password)
 
 def authenticate_user(db: Session, email: str, password: str):
-    user = db.get(User,email)
+    user = db.get(User, email)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):

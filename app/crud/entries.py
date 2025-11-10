@@ -53,4 +53,4 @@ def delete_entry(entry_id,user_email, db: Session):
             return None
         db.delete(entry)
         db.commit()
-        return entry
+        return True
