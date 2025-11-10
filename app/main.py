@@ -2,12 +2,13 @@ from fastapi import FastAPI
 from datetime import datetime
 from app.models import Base
 from app.database import engine
-from app.routers import users, auth, entries
+from app.routers import users, auth, entries, tags
 
 app = FastAPI()
 app.include_router(users.router)
 app.include_router(auth.router)
 app.include_router(entries.router)
+app.include_router(tags.router)
 
 @app.get("/hello")
 async def hello():

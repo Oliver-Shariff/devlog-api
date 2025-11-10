@@ -1,18 +1,3 @@
-# Create app/routers/entries.py with:
-#
-#     GET /api/entries → list current user’s entries
-#         Depends(security.get_current_user)
-#
-#     POST /api/entries → create a new entry for current user
-#
-#     GET /api/entries/{entry_id} → get a single entry
-#         Only if owned by the current user
-#
-#     PUT /api/entries/{entry_id} → update title/content
-#         Only if owned by current user
-#
-#     DELETE /api/entries/{entry_id} → delete
-#         Only if owned by current user
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
