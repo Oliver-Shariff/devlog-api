@@ -1,5 +1,5 @@
 from app.database import Base
-from sqlalchemy import Column, Integer, String, TIMESTAMP, text, ForeignKey
+from sqlalchemy import Column, Integer, String, TIMESTAMP, text, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 class User(Base):
@@ -28,14 +28,19 @@ class Entry(Base):
 class Tag(Base):
     __tablename__ = "tags"
 
-    id = Column(Integer, primary_key = True, nullable = False, autoincrement= True)
-    name = Column(String, unique=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String, nullable=False)
+    user_email = Column(ForeignKey("users.email", ondelete="CASCADE"), nullable=False)
+
     entries = relationship("Entry", secondary="tag_entry_join", back_populates="tags")
-    user_email = Column(ForeignKey("users.email"), nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint("user_email", "name", name="uq_tag_user_name"),
+    )
 
 class TagEntryJoin(Base):
     __tablename__ = "tag_entry_join"
 
-    tag_id = Column(ForeignKey("tags.name"), primary_key = True)
-    entry_id = Column(ForeignKey("entries.id"), primary_key = True)
+    tag_id = Column(ForeignKey("tags.id", ondelete="CASCADE"), primary_key = True)
+    entry_id = Column(ForeignKey("entries.id", ondelete="CASCADE"), primary_key = True)
     

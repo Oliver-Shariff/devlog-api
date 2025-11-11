@@ -34,7 +34,6 @@ class LoginRequest(BaseModel):
 
 class TagBase(BaseModel):
     name: str
-    email: EmailStr
 
 class TagCreate(TagBase):
     pass

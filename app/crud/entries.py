@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import update, select
-from app.models import Entry
+from app.models import Entry, Tag
 
 def create_entry(user_email, title, content, db: Session):
     new_entry = Entry(user_email = user_email, title = title, content = content)
@@ -21,15 +21,18 @@ def get_entry_by_id(entry_id, user_email, db: Session):
         return None
     return entry
 
-def get_entries_for_user(user_email, db: Session, skip: int, limit: int):
-    stmnt = (
-        select(Entry)
-        .filter_by(user_email = user_email)
-        .order_by(Entry.created_on.desc())
+def get_entries_for_user(user_email, db: Session,skip: int, limit: int, tag_name: str | None = None ):
+    query = db.query(Entry).filter(Entry.user_email == user_email)
+
+    if tag_name:
+        query = query.filter(Entry.tags.any(Tag.name == tag_name))
+
+    return (
+        query.order_by(Entry.created_on.desc())
         .offset(skip)
-        .limit(limit))
-    result = db.execute(stmnt)
-    return result.scalars().all()
+        .limit(limit)
+        .all()
+    )
 
 def update_entry(entry_id, db: Session, user_email, title = None, content = None,):
     entry = db.get(Entry, entry_id)

@@ -15,11 +15,12 @@ from app.models import User
 router = APIRouter(prefix="/api/entries", tags=["entries"])
 
 @router.get("/", response_model=list[EntryRead])
-async def get_current_user_entry(current_user: User = Depends(security.get_current_user), db: Session = Depends(get_db), skip: int = 0, limit: int = 10):
+async def get_current_user_entry(tag_name:str = None, current_user: User = Depends(security.get_current_user), db: Session = Depends(get_db), skip: int = 0, limit: int = 10):
     """ This route returns all entries for the current user """
     entries = entries_crud.get_entries_for_user(
         current_user.email,
         db = db,
+        tag_name= tag_name,
         skip = skip,
         limit=limit)
     return entries
