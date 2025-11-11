@@ -33,7 +33,7 @@ def link_tag_to_entry(entry_id: int, user_email: str, tag_name, db: Session):
         db.commit()
         db.refresh(new_link)
         return new_link
-    except IndentationError:
+    except IntegrityError:
         db.rollback()
         raise
 
