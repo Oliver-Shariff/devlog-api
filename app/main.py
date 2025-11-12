@@ -2,13 +2,15 @@ from fastapi import FastAPI
 from datetime import datetime
 from app.models import Base
 from app.database import engine
-from app.routers import users, auth, entries, tags
+from app.routers import users, auth, entries, tags, analytics, ai
 
 app = FastAPI()
 app.include_router(users.router)
 app.include_router(auth.router)
 app.include_router(entries.router)
 app.include_router(tags.router)
+app.include_router(analytics.router)
+app.include_router(ai.router)
 
 @app.get("/hello")
 async def hello():
