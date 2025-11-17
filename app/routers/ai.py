@@ -10,8 +10,12 @@ router = APIRouter(prefix="/api/ai", tags=["ai"])
 
 @router.post("/summarize/{entry_id}")
 async def summarize_entry(entry_id: int, db: Session= Depends(get_db), current_user: User = Depends(security.get_current_user)):
-    summary = ai_functions.summarize_entry_text(entry_id=entry_id, user_email=current_user.email, db=db)
+    result = ai_functions.summarize_entry_text(entry_id=entry_id, user_email=current_user.email, db=db)
 
-    if not summary:
+    if not result:
         raise HTTPException(status_code=404, detail = "Entry does not exist or does not belong to you.")
-    return summary
+
+    if isinstance(result, dict) and "error" in result:
+        raise HTTPException(status_code=400, detail=result["error"])
+        
+    return result

@@ -23,6 +23,7 @@ class Entry(Base):
     server_default=text('now()'),
     onupdate=text('now()')
     )
+    summary = Column(String, nullable = True)
     tags = relationship("Tag", secondary="tag_entry_join", back_populates="entries")
 
 class Tag(Base):

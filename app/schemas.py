@@ -54,6 +54,7 @@ class EntryRead(BaseModel):
     content: str
     created_on: datetime
     last_edit: datetime
+    summary: Optional[str] = None
     tags: list[TagRead] = []
 
     class Config:
