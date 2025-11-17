@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, SessionLocal
 from sqlalchemy import update
 from sqlalchemy.exc import IntegrityError
 from app.models import Entry
@@ -16,20 +16,29 @@ client = OpenAI(
 
 MIN_ENTRY_TEXT = 300
 
-def summarize_entry_text(entry_id: int, user_email, db: Session ) -> str:
+def validate_entry(entry_id: int, user_email, db: Session):
     entry = db.get(Entry, entry_id)
 
-    summary = entry.summary
-    if summary:
-        return summary
-
     if not entry or entry.user_email != user_email:
-        return None
+        return {"error": "Entry does not exist or does not belong to you.", "code": 404}
+
+    summary = entry.summary
+
+    if summary:
+        return {"error": "Summary already exists.", "code": 409}
+        # let's add a flag later that turns this check off
     
     entry_text = entry.content
 
     if len(entry.content or "") <= MIN_ENTRY_TEXT:
-        return {"error": f"Entry too short for summarization (min {MIN_ENTRY_TEXT} characters required)"}
+        return {"error": f"Entry too short for summarization (min {MIN_ENTRY_TEXT} characters required)", "code": 400}
+
+    return entry_text
+
+
+def summarize_entry_text(entry_id: int, entry_text):
+    db = SessionLocal()
+    entry = db.get(Entry, entry_id)
 
     response = client.chat.completions.create(
         model="gpt-4o-mini",
@@ -46,5 +55,6 @@ def summarize_entry_text(entry_id: int, user_email, db: Session ) -> str:
     db.execute(stmnt)
     db.commit()
     db.refresh(entry)
+    db.close()
     return summary
 

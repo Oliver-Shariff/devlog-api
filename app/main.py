@@ -11,7 +11,7 @@ app.include_router(entries.router)
 app.include_router(tags.router)
 app.include_router(analytics.router)
 app.include_router(ai.router)
-
+    
 @app.get("/hello")
 async def hello():
     """This route returns Hello World"""
