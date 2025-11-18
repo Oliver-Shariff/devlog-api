@@ -1,4 +1,6 @@
 import os
+import time
+import threading
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -62,8 +64,52 @@ class RedisCache(CacheBackend):
         return self.client.exists(key) == 1
 
 class MemoryTTLCache(CacheBackend):
-    """Will be implemented in the next step."""
-    pass
+    
+    def __init__(self):
+        self.store = {}
+        self.lock = threading.Lock()
+
+    def _purge_expired(self):
+        """ Remove expired items"""
+        now = time.time()
+        expired_keys = []
+
+        for key, (_, expire_at) in self.store.items():
+            if expire_at is not None and expire_at < now:
+                expired_keys.append(key)
+
+        for key in expired_keys:
+            del self.store[key]
+
+        def get(self,key: str):
+            with self.lock:
+                self._purge_expired()
+
+                if key not in self.store:
+                    return None
+
+                value, expire_at = self.store[key]
+
+                if expire_at is not None and expire_at < time.time():
+                    del self.store[key]
+                    return None
+                
+                return value
+    def set(self, key: str, value: str, ttl: int):
+        expire_at = time.time() + ttl if ttl is not None else None
+
+        with self.lock:
+            self.store[key] = (value, expire_at)
+
+    def delete (self, key: str):
+        with self.lock:
+            if key in self.store:
+                del self.store[key]
+
+    def exists(self,key:str):
+        with self.lock:
+            self._purge_expired()
+            return key in self.store
 
 if USE_REDIS:
     cache = RedisCache(redis_client)
