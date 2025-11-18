@@ -1,6 +1,7 @@
-from sqlalchemy.orm import Session, SessionLocal
+from sqlalchemy.orm import Session
 from sqlalchemy import update
 from sqlalchemy.exc import IntegrityError
+from app.database import SessionLocal
 from app.models import Entry
 from openai import OpenAI
 from dotenv import load_dotenv
